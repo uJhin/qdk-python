@@ -14,6 +14,7 @@ import json
 import uuid
 import os
 import time
+import pytest
 
 from azure.quantum import Workspace
 from azure.quantum.optimization import Problem
@@ -34,6 +35,34 @@ class TestJob(QuantumTestBase):
             return Job.create_job_id()
         
         return self.dummy_uid
+
+    def test_job_submit(self):
+        if (os.environ.get("QUANTUM_E2E_TESTS", None) is None):
+            pytest.skip("Quantum E2E live test only")
+            return
+
+        ws = self.create_workspace()
+        assert ws is not None
+
+        problem = Problem(name="test")
+        count = 4
+        for i in range(count):
+            problem.add_term(c=i, indices=[i, i+1])
+
+        solver = SimulatedAnnealing(ws)        
+        job = solver.submit(problem)
+        assert job is not None
+        os.environ.set("QUANTUM_JOB_ID", job.id)
+
+        # Wait job to complete within 30 seconds
+        for i in range(30):
+            if job.has_completed():
+                break
+            time.sleep(1)
+
+        self.assertEqual(True, job.has_completed())
+        job.get_results()
+
 
     def test_job_refresh(self):
         ws = self.create_workspace()
