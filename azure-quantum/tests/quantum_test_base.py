@@ -17,6 +17,7 @@ from azure.common.credentials import ServicePrincipalCredentials
 from msrest.authentication import BasicTokenAuthentication
 from azure_devtools.scenario_tests.base import ReplayableTest
 from azure_devtools.scenario_tests.recording_processors import RecordingProcessor, is_text_payload, AccessTokenReplacer
+from azure_devtools.scenario_tests.utilities import _get_content_type
 
 class QuantumTestBase(ReplayableTest):
     """QuantumTestBase
@@ -36,7 +37,7 @@ class QuantumTestBase(ReplayableTest):
         self._tenant_id = os.environ.get("AZURE_TENANT_ID", self.dummy_uid)
         self._resource_group = os.environ.get("RESOURCE_GROUP", self.dummy_rg)
         self._subscription_id = os.environ.get("SUBSCRIPTION_ID", self.dummy_uid)
-        self._workspace_name = os.environ.get("WORKSPACE_NAME", self.dummy_ws)
+        self._workspace_name = os.environ.get("QUANTUM_WORKSPACE_NAME", self.dummy_ws)
 
         regex_replacer = CustomRecordingProcessor()
         recording_processors = []
