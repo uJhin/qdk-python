@@ -14,7 +14,7 @@ import numpy as np
 from typing import List, Union, Dict, Optional, TYPE_CHECKING
 from enum import Enum
 from azure.quantum.optimization import Term
-from azure.quantum.storage import upload_blob, ContainerClient
+from azure.quantum.storage import upload_blob, ContainerClient, BlobClient, download_blob
 
 
 logger = logging.getLogger(__name__)
@@ -212,3 +212,31 @@ class Problem:
                 total_cost += term.evaluate(configuration_transformed)
 
         return total_cost
+    
+    def _get_upload_coords(self, workspace:"Workspace"):
+        #blob_name=self.id
+        if self.uploaded_blob_uri:
+            blob_client = BlobClient.from_blob_url(self.uploaded_blob_uri)
+            container_client = ContainerClient.from_container_url(
+                workspace._get_linked_storage_sas_uri(
+                    blob_client.container_name))
+            blob_name = blob_client.blob_name
+        elif not workspace.storage:
+            # No storage account is passed, use the linked one
+            container_uri = workspace._get_linked_storage_sas_uri(self.id)
+            container_client = ContainerClient.from_container_url(container_uri)
+        #else:
+            # Use the specified storage account
+            #container_client = ContainerClient.from_connection_string(workspace.storage, self.id)
+        
+        return { 'blob_name': blob_name, 'container_client': container_client }
+    
+    def download(self, workspace: "Workspace"):
+        """Downloads the uploaded problem as an instance of `Problem`"""
+        if not self.uploaded_blob_uri:
+            raise Exception('Problem may not be downloaded before it is uploaded')
+
+        coords = self._get_upload_coords(workspace)
+        blob = coords['container_client'].get_blob_client(coords['blob_name'])
+        contents = download_blob(blob.url)
+        return Problem.deserialize(contents, self.name)
