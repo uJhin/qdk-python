@@ -19,4 +19,4 @@ class OnlineProblem(Problem):
     
     def download(self, workspace:"Workspace") -> Problem:
         logger.warning("This will download the problem to your machine")
-        return Problem.download(self,workspace)
+        return Problem.download(self)

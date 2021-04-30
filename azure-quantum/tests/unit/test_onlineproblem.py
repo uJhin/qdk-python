@@ -7,7 +7,6 @@ class TestOnlineProblem(unittest.TestCase):
     def setUp(self):
         self.mockWs = Mock(spec = Workspace)
         self.mockUrl = "https://mock.blob.core.windows.net/mck461d9-9cb0-11eb-991b-1860247f69ed/mck461d9-9cb0-11eb-991b-1860247f69ed"
-        self.mock_conn_str = "https://storagesample.blob.core.windows.net/sample-container/sampleBlob.txt?sv=2015-07-08&sr=b&sig=39Up9JzHkxhUIhFEjEH9594DJxe7w6IRCg0V6ICGSo%3D&se=2016-10-18t@1%3A51%3A37Z&sp=rcw"
     def test_evaluate_oproblem(self):
         # Arrange
         o_problem = OnlineProblem('test_prob', self.mockUrl)
