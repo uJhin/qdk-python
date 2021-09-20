@@ -33,7 +33,7 @@ setuptools.setup(
     ],
     install_requires=[
         'qsharp',
-        'jupyter_jsmol',
+        'jupyter-jsmol',
         'networkx',
         'varname',
         'ruamel-yaml',
